@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 Developer ******
 1)Tuka
 2)Sanket
 3)Pankaj
+=======
+I AM a full stack developer.Fullstack developer means he/she is neither good in front end or backend.
+Thank you.
+Tukaram Gurav
+>>>>>>> d5e15a77703b771f65017aeaef7ef330fc4041c5
