@@ -563,8 +563,7 @@ public class ImportMainController {
 			newImport.setGrossWeightInCarats(import2.getGrossWeightInCarats());
 			newImport.setAssessableValueInDollar(import2.getAssessableValueInDollar());
 			newImport.setSnzStatus(import2.getSnzStatus());
-			
-			
+			newImport.setSnzExportStatus(existingImport.getSnzExportStatus());			
 			
 			newImport.setNoc(existingImport.getNoc());
 			newImport.setDgdc_cargo_in_scan(existingImport.getDgdc_cargo_in_scan());
@@ -770,8 +769,9 @@ public class ImportMainController {
 	            List<Import_History> historyEntries = new ArrayList<>();
 	            for (Import existingImport : importList) {	            	
 	            	
-	            	importRepository.updateHandOverToParty(compid, branchId,existingImport.getSirNo(), existingImport.getMawb(), existingImport.getHawb(), "Handed Over to CHA",user,carting , representativeId);
+	            	int updateHandOverToParty = importRepository.updateHandOverToParty(compid, branchId,existingImport.getSirNo(), existingImport.getMawb(), existingImport.getHawb(), "Handed Over to CHA",user,carting , representativeId);
 	            	
+	            	if(updateHandOverToParty == 1) { 
 	                Import_History history = new Import_History();
 	                history.setCompanyId(compid);
 	                history.setBranchId(branchId);
@@ -785,8 +785,12 @@ public class ImportMainController {
 	            	history.setHandOverParty(carting);
 	    			history.setHandOverRepresentative(representativeId);
 	                historyEntries.add(history);
+	            	}
 	            }
+	            if(historyEntries != null)
+				{
 	            historyService.addAllHistory(historyEntries);
+				}
 	            representative.setOtp("");
 	            RepsentativeService.addrepresentative(representative);
 	            return ResponseEntity.ok("OK");
@@ -850,7 +854,10 @@ public class ImportMainController {
 				}
 				
 			}
+			if(historyEntries != null)
+			{
                 historyService.addAllHistory(historyEntries);
+			}
 			    Representative.setOtp("");
 	            RepsentativeService.addrepresentative(Representative);
 			return ResponseEntity.ok("OK");
@@ -898,9 +905,9 @@ public class ImportMainController {
 
 			for (Import existingImport : importList) {
 				
-				importRepository.updateCartingAgent(compid, branchId, existingImport.getSirNo(), existingImport.getMawb(), existingImport.getHawb(), "Handed over to Console",user,userId , ReprentativeId, tpNo);
+				int updateCartingAgent = importRepository.updateCartingAgent(compid, branchId, existingImport.getSirNo(), existingImport.getMawb(), existingImport.getHawb(), "Handed over to Console",user,userId , ReprentativeId, tpNo);
 							
-
+				if(updateCartingAgent == 1) { 
 				Import_History history = new Import_History();
 				history.setCompanyId(compid);
 				history.setBranchId(branchId);
@@ -915,11 +922,14 @@ public class ImportMainController {
 				history.setHandOverParty(userId);
     			history.setHandOverRepresentative(ReprentativeId);
 				importHistoryList.add(history);
+				}
 				
 			}
 			
 //			importService.updateAll(importList);
-			historyService.SaveAllImportsHistory(importHistoryList);
+			if(importHistoryList != null)
+			{
+			historyService.SaveAllImportsHistory(importHistoryList);}
 			
 			Representative.setOtp("");
 			RepsentativeService.addrepresentative(Representative);
@@ -930,6 +940,11 @@ public class ImportMainController {
 		}
 	}
 
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1543,13 +1558,12 @@ public class ImportMainController {
 					if (isImageFile(fileExtension)) {
 						// If it's an image file, return a data URL
 						byte[] imageBytes = Files.readAllBytes(filePath);
-						String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-						String dataURL = "data:image/jpeg;base64," + base64Image;
+//						String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+//						String dataURL = "data:image/jpeg;base64," + base64Image;
 
 						HttpHeaders headers = new HttpHeaders();
 						headers.setContentType(MediaType.TEXT_PLAIN); // Set the content type to text/plain
-
-						return new ResponseEntity<>(dataURL, headers, HttpStatus.OK);
+						return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
 					} else if (isPdfFile(fileExtension)) {
 						// If it's a PDF file, return the PDF data as base64
 						byte[] pdfBytes = Files.readAllBytes(filePath);
